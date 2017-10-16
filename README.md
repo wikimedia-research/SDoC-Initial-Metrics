@@ -12,3 +12,8 @@ As the [Structured Data on Commons](https://commons.wikimedia.org/wiki/Commons:S
         - [x] How many are deleted for copyright violations
         - [x] Average time to deletion
         - [x] How many people are involved in flagging for deletion/deleting files
+- [x] [T177354](https://phabricator.wikimedia.org/T177354): bots vs users
+    - [x] How many files are uploaded by bots vs users
+        - [x] Breakdown by media type
+        - [x] Historical trends
+        

@@ -1,0 +1,153 @@
+---
+title: 'Metrics for SDoC: look at contributions'
+author: "Chelsy Xie"
+date: "10/12/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(0)
+library(tidyverse)
+```
+
+```{r sql_setup, echo=FALSE}
+message("Create an auto-closing SSH tunnel in the background...")
+# See https://gist.github.com/scy/6781836 for more info.
+system("ssh -f -o ExitOnForwardFailure=yes stat1006.eqiad.wmnet -L 3307:analytics-store.eqiad.wmnet:3306 sleep 10")
+library(RMySQL)
+con <- dbConnect(MySQL(), host = "127.0.0.1", group = "client", dbname = "commonswiki", port = 3307)
+```
+
+Epic ticket: [T174519](https://phabricator.wikimedia.org/T174519)
+
+# Metrics for SDoC: look at contributions
+
+Ticket: [T177354](https://phabricator.wikimedia.org/T177354)
+
+## Breakdown by media type
+
+```{r bot_by_media_fetch, eval=FALSE}
+query <- "
+SELECT img_media_type, user_group, COUNT(*) AS n_files
+FROM (
+-- Get active/inactive bots
+SELECT ug_user AS user_id, ug_group AS user_group
+FROM user_groups
+WHERE ug_group = 'bot'
+UNION
+SELECT ufg_user AS user_id, ufg_group AS user_group
+FROM user_former_groups
+WHERE ufg_group = 'bot'
+UNION
+-- Get user ids with bot categories in their user pages
+SELECT user.user_id, 'bot' AS user_group
+FROM user INNER JOIN (
+  -- all user page names with bot category
+  SELECT REPLACE(page.page_title, '_', ' ') AS user_name
+  FROM page INNER JOIN (
+    -- page ids with bot categories 
+    SELECT DISTINCT cl_from AS page_id
+    FROM categorylinks
+    WHERE cl_to REGEXP '_(bot_flag|bots)(_|$)'
+      AND cl_type = 'page'
+  ) AS bot_cat ON page.page_id=bot_cat.page_id
+  WHERE page_namespace = 2
+) AS bot_name ON user.user_name=bot_name.user_name
+) AS bots RIGHT JOIN image ON bots.user_id = image.img_user
+GROUP BY img_media_type, user_group;
+"
+message("Using SSH tunnel & connection to Analytics-Store...")
+bot_by_media <- wmf::mysql_read(query, "commonswiki", con = con)
+message("Closing connection...")
+wmf::mysql_close(con)
+save(bot_by_media, file = "data/bot_by_media.RData")
+```
+
+```{r bot_by_media_plot, results='asis'}
+load("data/bot_by_media.RData")
+
+bot_by_media <- bot_by_media %>%
+  mutate(user_group = if_else(is.na(user_group), "user", user_group),
+         img_media_type = tolower(img_media_type),
+         proportion = paste0(round(n_files / sum(n_files), 4) * 100, "%"))
+
+bot_by_media %>%
+  group_by(user_group) %>%
+  summarize(n_files = sum(n_files)) %>%
+  mutate(proportion = n_files/sum(n_files))
+
+knitr::kable(bot_by_media)
+```
+
+## Breakdown by month
+
+```{r bot_by_month_fetch, eval=FALSE}
+query <- "
+SELECT LEFT(img_timestamp, 6) AS yr_month, user_group, COUNT(*) AS n_files
+FROM (
+-- Get active/inactive bots
+SELECT ug_user AS user_id, ug_group AS user_group
+FROM user_groups
+WHERE ug_group = 'bot'
+UNION
+SELECT ufg_user AS user_id, ufg_group AS user_group
+FROM user_former_groups
+WHERE ufg_group = 'bot'
+UNION
+-- Get user ids with bot categories in their user pages
+SELECT user.user_id, 'bot' AS user_group
+FROM user INNER JOIN (
+  -- all user page names with bot category
+  SELECT REPLACE(page.page_title, '_', ' ') AS user_name
+  FROM page INNER JOIN (
+    -- page ids with bot categories 
+    SELECT DISTINCT cl_from AS page_id
+    FROM categorylinks
+    WHERE cl_to REGEXP '_(bot_flag|bots)(_|$)'
+      AND cl_type = 'page'
+  ) AS bot_cat ON page.page_id=bot_cat.page_id
+  WHERE page_namespace = 2
+) AS bot_name ON user.user_name=bot_name.user_name
+) AS bots RIGHT JOIN image ON bots.user_id = image.img_user
+GROUP BY LEFT(img_timestamp, 6), user_group;
+"
+message("Using SSH tunnel & connection to Analytics-Store...")
+bot_by_month <- wmf::mysql_read(query, "commonswiki", con = con)
+message("Closing connection...")
+wmf::mysql_close(con)
+save(bot_by_month, file = "data/bot_by_month.RData")
+```
+
+```{r bot_by_month_plot}
+load("data/bot_by_month.RData")
+
+bot_by_month <- bot_by_month %>%
+  mutate(year_month = zoo::as.yearmon(yr_month, "%Y%m"),
+         user_group = if_else(is.na(user_group), "user", user_group)) %>%
+  arrange(year_month, user_group) %>%
+  group_by(user_group) %>%
+  mutate(total_files = cumsum(n_files)) %>%
+  group_by(yr_month) %>%
+  mutate(proportion = total_files / sum(total_files))
+
+bot_by_month %>%
+  ggplot(aes(x=year_month, y=total_files, group=user_group, color=user_group)) +
+  geom_line(size = 1) +
+  zoo::scale_x_yearmon(breaks = seq(min(bot_by_month$year_month), max(bot_by_month$year_month), by = 1)) +
+  scale_y_continuous(labels = polloi::compress) +
+  scale_color_brewer("User Group", palette = "Set1") +
+  labs(x = "Month", y = "Number of files", title = "Number of files on Commons by user groups") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom", strip.placement = "outside", axis.text.x = element_text(angle = 90))
+
+bot_by_month %>%
+  ggplot(aes(x=year_month, y=proportion, group=user_group, color=user_group)) +
+  geom_line(size = 1) +
+  zoo::scale_x_yearmon(breaks = seq(min(bot_by_month$year_month), max(bot_by_month$year_month), by = 1)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_brewer("User Group", palette = "Set1") +
+  labs(x = "Month", y = "Proportion of files", title = "Proportion of files on Commons by user groups") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom", strip.placement = "outside", axis.text.x = element_text(angle = 90))
+```
