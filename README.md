@@ -16,4 +16,5 @@ As the [Structured Data on Commons](https://commons.wikimedia.org/wiki/Commons:S
     - [x] How many files are uploaded by bots vs users
         - [x] Breakdown by media type
         - [x] Historical trends
+- [x] [T177534](https://phabricator.wikimedia.org/T177534): Search Metrics for SDoC: eventlogging
         
