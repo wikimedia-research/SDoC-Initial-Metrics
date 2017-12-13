@@ -17,4 +17,15 @@ As the [Structured Data on Commons](https://commons.wikimedia.org/wiki/Commons:S
         - [x] Breakdown by media type
         - [x] Historical trends
 - [x] [T177534](https://phabricator.wikimedia.org/T177534): Search Metrics for SDoC: eventlogging
-        
+- [ ] [T177358](https://phabricator.wikimedia.org/T177358): Metrics for SDoC: translations
+    - [ ] how many files/descriptions are in multiple languages?
+        - [ ] How many files are in lang X?
+        - [ ] How many have multiple languages in them?
+        - [ ] How many Western industrialized languages?
+    - [x] How many search queries happen in what languages?
+
+## Further Reading
+
+- [MrMetadata](https://tools.wmflabs.org/mrmetadata/)
+    - File metadata cleanup drive from September 2014
+    - See [*Cleaning up file metadata, for humans and robots*](https://blog.wikimedia.org/2014/11/07/cleaning-up-file-metadata-for-humans-and-robots/) blog post by Guillaume Paumier
