@@ -18,11 +18,15 @@ As the [Structured Data on Commons](https://commons.wikimedia.org/wiki/Commons:S
         - [x] Historical trends
 - [x] [T177534](https://phabricator.wikimedia.org/T177534): Search Metrics for SDoC: eventlogging
 - [ ] [T177358](https://phabricator.wikimedia.org/T177358): Metrics for SDoC: translations
-    - [ ] how many files/descriptions are in multiple languages?
-        - [ ] How many files are in lang X?
-        - [ ] How many have multiple languages in them?
-        - [ ] How many Western industrialized languages?
+    - [x] how many files/descriptions are in multiple languages?
+        - [x] How many files are in lang X?
+        - [x] How many have multiple languages in them?
+        - [x] How many Western industrialized languages?
     - [x] How many search queries happen in what languages?
+- [x] [T177353](https://phabricator.wikimedia.org/T177353): "Unfindable" images metrics
+    - [x] Lack of categorization
+    - [x] Lack of description
+    - [x] [ImageNote](https://commons.wikimedia.org/wiki/Template:ImageNote)
 
 ## Further Reading
 
