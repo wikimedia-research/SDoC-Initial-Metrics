@@ -17,7 +17,7 @@ As the [Structured Data on Commons](https://commons.wikimedia.org/wiki/Commons:S
         - [x] Breakdown by media type
         - [x] Historical trends
 - [x] [T177534](https://phabricator.wikimedia.org/T177534): Search Metrics for SDoC: eventlogging
-- [ ] [T177358](https://phabricator.wikimedia.org/T177358): Metrics for SDoC: translations
+- [x] [T177358](https://phabricator.wikimedia.org/T177358): Metrics for SDoC: translations
     - [x] how many files/descriptions are in multiple languages?
         - [x] How many files are in lang X?
         - [x] How many have multiple languages in them?
