@@ -10,7 +10,7 @@ We parsed the wikitext of all files in [Commons xml data dumps of November 20, 2
 
 For those files without language template, we use the [langdetect package](https://pypi.python.org/pypi/langdetect) to detect their languages. We cannot detect any language in 556,684 files (1.29% of all 43,268,565 files). We detect 1 language for 7,577,789 (17.51%) files.
 
-![Files by number of detected languages](figures/files_by_n_languages.png)
+![Files by number of detected languages](figures/files_by_n_detected_languages.png)
 
 We detect English in 30.25% of all 43,268,565 files, detect German in 3.93% of files.
 

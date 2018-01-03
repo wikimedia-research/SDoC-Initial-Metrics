@@ -44,7 +44,7 @@ Excluding [hidden categories](https://commons.wikimedia.org/wiki/Commons:Categor
 
 ## Lack of description
 
-We parsed the wikitext of all files in [Commons xml data dumps of November 20, 2017](https://dumps.wikimedia.org/commonswiki/20171120/). Out of the total 43,268,565 files, 41,796,560 (96.6%) files have a [infobox](https://dumps.wikimedia.org/commonswiki/20171120/), 41,309,028 (95.47%) have some contents in their description fields (description, title, depicted people, depicted place, etc). Analysis codebase: https://github.com/wikimedia-research/SDoC-Initial-Metrics/tree/master/T177358-1 .
+We parsed the wikitext of all files in [Commons xml data dumps of November 20, 2017](https://dumps.wikimedia.org/commonswiki/20171120/). Out of the total 43,268,565 files, 41,796,560 (96.6%) files have a [infobox](https://commons.wikimedia.org/wiki/Category:Infobox_templates), 41,309,028 (95.47%) have some contents in their description fields (description, title, depicted people, depicted place, etc). Analysis codebase: https://github.com/wikimedia-research/SDoC-Initial-Metrics/tree/master/T177358-1 .
 
 Caveat:
 
