@@ -23,5 +23,6 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 .Rproj.user
-# Events data
+# Data
 *_events_raw_*.RData
+T177358-1/data/
